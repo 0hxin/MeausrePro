@@ -44,7 +44,7 @@ function Login() {
                     role: res.data.role,
                     topManager: res.data.topManager
                 })
-                navigate('/MeausrePro');
+                navigate('/Main');
             })
             .catch(err => {
                 Swal.fire({
@@ -56,38 +56,6 @@ function Login() {
                 setPass('');
             })
     }
-
-    // test server login
-    const testLogin = () => axios.post(`http://localhost:8080/MeausrePro/User/webLogin`, {
-        idx: 1,
-        id: 'test1@gmail.com',
-        pass: '1234',
-        name: '',
-        tel: '',
-        role: '',
-        topManager: ''
-    })
-        .then(res => {
-            setUser({
-                idx: res.data.idx,
-                id: res.data.id,
-                pass: res.data.pass,
-                name: res.data.name,
-                tel: res.data.tel,
-                role: res.data.role,
-                topManager: res.data.topManager
-            })
-            navigate('/MeausrePro');
-        })
-        .catch(err => {
-            console.log(err);
-            Swal.fire({
-                icon: "error",
-                text: `아이디와 비밀번호를 확인해주세요.`,
-                showCancelButton: false,
-                confirmButtonText: '확인'
-            })
-        })
 
     return (
         <div className={'loginBackground'}>
@@ -136,9 +104,6 @@ function Login() {
                         로그인
                     </button>
                 </form>
-                <button type={'button'} className={'btn btn-success opacity-50'} onClick={testLogin}>
-                    test
-                </button>
             </div>
         </div>
     );

@@ -26,11 +26,7 @@ public class ImgController {
 
     // 이미지 업로드
     @PostMapping("/upload/{sectionId}")
-    public ResponseEntity<MeausreProImg> upload(
-            @RequestParam("file") MultipartFile file,
-            @PathVariable("sectionId") int sectionId
-    ) {
-
+    public ResponseEntity<MeausreProImg> upload(@RequestParam("file") MultipartFile file, @PathVariable("sectionId") int sectionId) {
         MeausreProImg img = imgService.uploadImage(file, sectionId);
         if (img != null) {
             return ResponseEntity.ok(img);
@@ -47,26 +43,12 @@ public class ImgController {
 
     // 이미지 다운로드
     @GetMapping("/download/{fileName:.+}")
-    public ResponseEntity<Resource> downloadImage(@PathVariable String fileName) {
+    public ResponseEntity<String> downloadImage(@PathVariable String fileName) {
         try {
-            // 파일 경로 설정 (uploads 디렉토리 또는 다른 경로)
-            Path downloadPath = Paths.get("C:/fullstack405/MeausrePro/meausrepro_spring/image/" + fileName);
-            Resource resource = new UrlResource(downloadPath.toUri());
-
-            if (resource.exists() && resource.isReadable()) {
-                String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString());
-
-                // Content-Disposition 헤더 설정
-                HttpHeaders headers = new HttpHeaders();
-                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"");
-
-                return ResponseEntity.ok()
-                        .headers(headers)
-                        .body(resource);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (MalformedURLException | UnsupportedEncodingException e) {
+            String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString());
+            String fileUrl = imgService.getFileUrl(fileName);
+            return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"").body(fileUrl);
+        } catch (UnsupportedEncodingException e) {
             return ResponseEntity.badRequest().build();
         }
     }

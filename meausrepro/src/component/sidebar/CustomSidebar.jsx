@@ -42,7 +42,7 @@ function CustomSidebar(props) {
                     MeasurePro
                 </span>
                 <Link
-                    to="/MeausrePro"
+                    to="/Main"
                     className={`text-decoration-none`}
                 >
                     <div className={`customSideBarLink ${location.pathname === '/MeausrePro' ? 'active' : ''}`}>

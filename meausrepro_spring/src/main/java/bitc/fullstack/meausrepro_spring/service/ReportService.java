@@ -7,9 +7,13 @@ import bitc.fullstack.meausrepro_spring.repository.ReportRepository;
 import bitc.fullstack.meausrepro_spring.repository.SectionRepository;
 import bitc.fullstack.meausrepro_spring.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.File;
 import java.util.List;
@@ -25,10 +29,19 @@ public class ReportService {
     @Autowired
     private SectionRepository sectionRepository;
 
-    public ReportService(ReportRepository reportRepository, UserRepository userRepository, SectionRepository sectionRepository) {
+    private final S3Client s3Client;
+
+    @Value("${aws.s3.bucket-name}")
+    private String bucketName;
+
+    @Value("${aws.s3.base-url}")
+    private String s3BaseUrl;
+
+    public ReportService(ReportRepository reportRepository, UserRepository userRepository, SectionRepository sectionRepository, S3Client s3Client) {
         this.reportRepository = reportRepository;
         this.userRepository = userRepository;
         this.sectionRepository = sectionRepository;
+        this.s3Client = s3Client;
     }
 
     // 보고서 저장
@@ -103,15 +116,16 @@ public class ReportService {
 
     // 파일 삭제 로직을 별도로 분리
     private void deleteFile(String filePath) {
-        String localFilePath = filePath.replace("http://localhost:8080", "");
-        File file = new File("/path/to/local/reports/directory" + localFilePath);
-
-        if (file.exists()) {
-            if (!file.delete()) {
-                System.out.println("파일 삭제 실패: " + file.getPath());
-            }
-        } else {
-            System.out.println("파일이 존재하지 않습니다: " + file.getPath());
+// S3에 저장된 파일 삭제
+        String s3Key = filePath.replace(s3BaseUrl + "/", "");
+        try {
+            s3Client.deleteObject(DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(s3Key)
+                    .build());
+            System.out.println("S3 파일 삭제 성공: " + s3Key);
+        } catch (S3Exception e) {
+            System.out.println("S3 파일 삭제 실패: " + e.getMessage());
         }
     }
 }

@@ -37,6 +37,11 @@ dependencies {
 
     // JTS 라이브러리 추가
     implementation 'org.locationtech.jts:jts-core:1.18.1' // JTS 라이브러리 추가
+
+    implementation 'net.bytebuddy:byte-buddy:1.14.4'
+
+    // S3 쓰기위함
+    implementation 'software.amazon.awssdk:s3:2.26.31'
 }
 
 tasks.named('test') {

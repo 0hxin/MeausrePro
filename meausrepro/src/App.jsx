@@ -16,7 +16,7 @@ function App() {
             <BrowserRouter>
                 <Routes>
                     <Route path={'/'} element={<Login />} />
-                    <Route path={'/MeausrePro'} element={<Main />} />
+                    <Route path={'/Main'} element={<Main />} />
                     <Route path={'/UserManagement'} element={<UserManagement />} />
                     <Route path={'/GroupManagement'} element={<GroupManagement />}/>
                     <Route path={"/InsPage/:id"} element={<InsPage />} />
